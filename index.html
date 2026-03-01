@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Move Test Final</title>
+    <style>
+        html{
+            background-color: gray;
+        }
+        .car{
+            text-align: center;
+            font-size: 52px;
+            width: 70px;
+            height: 70px;
+            /* border: 1px solid black; */
+            position: absolute;
+        }
+        .coin{
+            transition: ease 0.5;
+            text-align: center;
+            font-size: 52px;
+            width: 70px;
+            height: 70px;
+            /* border: 1px solid black; */
+            position: absolute;
+            left: 500px;
+            top: 500px;
+        }
+        .text{
+            font-size: 32px;
+            color: white;
+        }
+        #coin_container{
+            text-align: center;
+            position: relative;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+        }
+        #shopBtn{
+            position: absolute;
+            border: none;
+            background-color: rgba(248, 248, 255, 0.556);
+            border-radius: 15px;
+            
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        #upgradeBtn{
+            position: absolute;
+            border: none;
+            background-color: rgba(248, 248, 255, 0.556);
+            border-radius: 15px;
+            
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        #addCoinBtn{
+            position: absolute;
+            border: none;
+            background-color: rgba(248, 248, 255, 0.556);
+            border-radius: 15px;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        #shoppingList{
+            font-size: 48px;
+        }
+        #shoppingSelect{
+            color:rgb(54,54,54)
+        }
+        #scoreShop{
+            margin-left:13vh;
+        }
+        .buyBtn{
+            border: none;
+            background-color: rgba(248, 248, 255, 0.556);
+            border-radius: 15px;
+            width:200px;
+            height:50px;
+            font-size: 20px;
+        }
+        .shopListContainer{
+            text-align: center;
+            width: 40vh;
+            background-color: rgb(85, 85, 85);
+            border-radius: 20px;
+        }
+        .empBtn{
+            width: 70px;
+            height: 70px;
+            background-color: transparent;
+            border: none;
+        }
+        .movBtn{
+            width: 100px;
+            height: 100px;
+            background-color: rgba(255, 255, 255, 0.51);
+            border: none;
+            touch-action: manipulation;
+        }
+        #controller{
+            position: fixed;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-auto-rows: 100px;
+            gap: 4px;
+            padding: 10px 0;
+            margin-left: 50px;
+            margin-bottom: 50px;
+        }
+    </style>
+</head>
+<body>
+    <button id="shopBtn" class="text" onclick="changeScreen()">🛒 쇼핑 메뉴</button><br><br><br>
+    <button id="upgradeBtn" class="text" onclick="levelUp()">⬆️ 0 / 0</button><br><br><br>
+    <!--<button id="addCoinBtn" class="text" onclick="addCoin()">⬆️</button><br><br><br>-->
+    <div id="game_screen">
+        <h1 class="car" id="car"></h1>
+        <h1 class="coin" id="coin">🪙</h1>
+        <div id="coin_container">
+            <h1 id="score" class="text">Loading...</h1>
+        </div>
+    </div>
+    <div id="shop_screen"><br><br><br>
+        <h1 id="scoreShop" class="text">Loading...</h1>
+        <div class="shopListContainer">
+            <h1 class="text" id="shoppingList">얻는 코인</h1>
+            <h1 class="text" style="color:rgb(54,54,54)" id="earnCount">0개 → 0개</h1>
+            <button class="buyBtn" id="earnCountBuy" onclick="upgradeEarn()">0🪙 구매하기</button>
+        </div><br><br><br><br><br><br>
+        <div class="shopListContainer">
+        <h1 class="text" id="shoppingList">코인 개수</h1>
+        <h1 class="text" style="color:rgb(54,54,54)" id="coinCount">0개 → 0개</h1>
+        <button class="buyBtn" id="coinCountBuy" onclick="upgradeCoin()">0🪙 구매하기</button>
+        </div>
+    </div>
+    <div id="controller">
+        <button class="empBtn"></button>
+        <button class="movBtn" ontouchstart="touchDir='up'" ontouchend="touchDir=null"></button>
+        <button class="empBtn"></button>
+
+        <button class="movBtn" ontouchstart="touchDir='left'" ontouchend="touchDir=null"></button>
+        <button class="movBtn"></button>
+        <button class="movBtn" ontouchstart="touchDir='right'" ontouchend="touchDir=null"></button>
+
+        <button class="empBtn"></button>
+        <button class="movBtn" ontouchstart="touchDir='down'" ontouchend="touchDir=null"></button>
+        <button class="empBtn"></button>
+    </div>
+    <script>
+        let x = 700, y = 700, speed = 3, score = 0, level = 0, newCoinCount = 1;
+        let move = false, change = false;
+        let moveInfo = ["x", speed]
+        let char = document.getElementById("car");
+        let keys = {};
+        let car_type = "🛼🛴🚲🛹🛺🛻🚗🚓🚌"
+        let cars = [
+            ["🛼", 3, 10],
+            ["🛴", 4, 30],
+            ["🛹", 5, 50],
+            ["🚲", 5.5, 80],
+            ["🛺", 6, 120],
+            ["🛻", 6.5, 150],
+            ["🚗", 8, 200],
+            ["🚓", 10, 250],
+            ["🚌", 12, 300],
+            ["?", 15, 1000000000]
+        ]
+        let shops = [
+            [1,3,10],
+            [1,2,20]
+        ]
+        let earn = 1;
+        let coinCount = 1;
+        document.getElementById("shop_screen").style.display = "none";
+        updateData()
+        function shopSet(){
+            document.getElementById("earnCount").textContent = `${shops[0][0]}개 → ${shops[0][1]}개`
+            document.getElementById("coinCount").textContent = `${shops[1][0]}개 → ${shops[1][1]}개`
+            document.getElementById("earnCountBuy").textContent = `${shops[0][2]}🪙 구매하기`
+            document.getElementById("coinCountBuy").textContent = `${shops[1][2]}🪙 구매하기`
+        }
+        function addCoin(){
+            newCoinCount ++;
+            if(newCoinCount >= 75000){
+                alert("코인이 너무 많습니다!")
+                return;
+            }
+            let nc = document.createElement(`h1`)
+            nc.textContent = "🪙";
+            nc.className = "coin"
+            nc.style.left = Math.round(Math.random() * window.innerWidth) + "px";
+            nc.style.top = Math.round(Math.random() * 1000) + "px";
+            document.getElementById("game_screen").appendChild(nc);
+        }
+        
+        function levelUp(){
+            var price = cars[level][2]
+            if((score - price) < 0){
+                alert("코인이 부족합니다.")
+            }else{
+                level++;
+                score -= price;
+                updateData()
+            }
+        }
+        shopSet()
+        function upgradeEarn(){
+            if(score < shops[0][2]){
+                alert("코인이 부족합니다.")
+                return;
+            }
+        
+            score -= shops[0][2];
+        
+            shops[0][0] *= 3;
+            earn = shops[0][0];
+            shops[0][1] = shops[0][0] * 3;
+            shops[0][2] *= 2;
+        
+            shopSet();
+            updateData();
+        }
+        function upgradeCoin(){
+            if(score < shops[1][2]){
+                alert("코인이 부족합니다.")
+                return;
+            }
+            score -= shops[1][2];
+            shops[1][0] = shops[1][1]
+            shops[1][1] = shops[1][0] * 2
+            shops[1][2] *= 2
+            for(i = 0; i < shops[1][0]; i++){
+                addCoin()
+            }
+            shopSet();
+            updateData();
+        }
+        function changeScreen(){
+            keys = {};
+            if(change == false){
+                change = true;
+                document.getElementById("game_screen").style.display = "none";
+                document.getElementById("shop_screen").style.display = "block";
+                
+            }else{
+                change = false;
+                document.getElementById("game_screen").style.display = "block";
+                document.getElementById("shop_screen").style.display = "none";
+            }
+        }
+        function isColliding(el1, el2){
+            const r1 = el1.getBoundingClientRect();
+            const r2 = el2.getBoundingClientRect();
+            return !(
+                r1.right < r2.left ||
+                r1.left > r2.right ||
+                r1.bottom < r2.top ||
+                r1.top > r2.bottom
+            );
+        }
+
+        document.addEventListener("keydown", function(e){
+            keys[e.key] = true;
+        });
+        document.addEventListener("keyup", function(e){
+            keys[e.key] = false;
+        });
+        function updateData(){
+            char.textContent = cars[level][0];
+            speed = cars[level][1];
+            document.getElementById("upgradeBtn").textContent = `⬆️ ${score} / ${cars[level][2]}`
+            document.getElementById("score").textContent = `${score}🪙`
+            document.getElementById("scoreShop").textContent = `${score}🪙`
+            
+        }
+        function mov(dir){
+            spd = 1;
+            if(dir === "up") y -= speed * spd;
+            if(dir === "down") y += speed * spd;
+            if(dir === "left") x -= speed * spd;
+            if(dir === "right") x += speed * spd;
+        }
+        let touchDir = null;
+        setInterval(function(){
+            if(change) return;
+            if(keys["w"]) y -= speed;
+            if(keys["s"]) y += speed;
+            if(keys["a"]) x -= speed;
+            if(keys["d"]) x += speed;
+        
+            char.style.left = x + "px";
+            char.style.top = y + "px";
+
+            let coins = document.querySelectorAll(".coin");
+            coins.forEach(c => {
+                if(isColliding(char, c)){
+                    c.style.left = Math.round(Math.random() * 1000) + "px";
+                    c.style.top = Math.round(Math.random() * 1000) + "px";
+                    score += earn;
+                    updateData();
+                }
+            });
+            if(change) return;
+            if(!touchDir) return;
+        
+            if(touchDir === "up") y -= speed;
+            if(touchDir === "down") y += speed;
+            if(touchDir === "left") x -= speed;
+            if(touchDir === "right") x += speed;
+        
+            char.style.left = x + "px";
+            char.style.top = y + "px";
+        }, 10);
+    </script>
+</body>
+</html>
