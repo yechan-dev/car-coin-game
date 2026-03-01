@@ -95,27 +95,29 @@
             border-radius: 20px;
         }
         .empBtn{
-            width: 70px;
-            height: 70px;
+            width: 100px;
+            height: 100px;
             background-color: transparent;
             border: none;
         }
         .movBtn{
-            width: 70px;
-            height: 70px;
+            z-index: 2000;
+            width: 100px;
+            height: 100px;
             background-color: rgba(255, 255, 255, 0.51);
             border: none;
             touch-action: manipulation;
         }
         #controller {
             position: fixed;
+            justify-content: center;
+            z-index: 2000;
             bottom: 10px;
             left: 10px;
             display: grid;
-            grid-template-columns: repeat(3, 70px);
-            grid-auto-rows: 70px;
+            grid-template-columns: repeat(3, 100px);
+            grid-auto-rows: 100px;
             gap: 6px;
-            box-sizing: border-box;
         }
         * {
             touch-action: none;
@@ -206,8 +208,8 @@
             let nc = document.createElement(`h1`)
             nc.textContent = "🪙";
             nc.className = "coin"
-            nc.style.left = Math.round(Math.random() * window.innerWidth) + "px";
-            nc.style.top = Math.round(Math.random() * 1000) + "px";
+            nc.style.left = Math.round(Math.random() * (window.innerWidth - 70)) + "px";
+            nc.style.top = Math.round(Math.random() * (window.innerWidth - 70)) + "px";
             document.getElementById("game_screen").appendChild(nc);
         }
         
@@ -258,11 +260,13 @@
             if(change == false){
                 change = true;
                 document.getElementById("game_screen").style.display = "none";
+                document.getElementById("controller").style.display = "none";
                 document.getElementById("shop_screen").style.display = "block";
                 
             }else{
                 change = false;
                 document.getElementById("game_screen").style.display = "block";
+                document.getElementById("controller").style.display = "grid";
                 document.getElementById("shop_screen").style.display = "none";
             }
         }
@@ -283,9 +287,6 @@
         document.addEventListener("keyup", function(e){
             keys[e.key] = false;
         });
-        document.addEventListener("touchmove", function(e){
-            e.preventDefault();
-        }, { passive: false });
         function updateData(){
             char.textContent = cars[level][0];
             speed = cars[level][1];
@@ -293,13 +294,6 @@
             document.getElementById("score").textContent = `${score}🪙`
             document.getElementById("scoreShop").textContent = `${score}🪙`
             
-        }
-        function mov(dir){
-            spd = 1;
-            if(dir === "up") y -= speed * spd;
-            if(dir === "down") y += speed * spd;
-            if(dir === "left") x -= speed * spd;
-            if(dir === "right") x += speed * spd;
         }
         let touchDir = null;
         setInterval(function(){
@@ -315,8 +309,8 @@
             let coins = document.querySelectorAll(".coin");
             coins.forEach(c => {
                 if(isColliding(char, c)){
-                    c.style.left = Math.round(Math.random() * 1000) + "px";
-                    c.style.top = Math.round(Math.random() * 1000) + "px";
+                    c.style.left = Math.round(Math.random() * (window.innerWidth - 70)) + "px";
+                    c.style.top = Math.round(Math.random() * (window.innerWidth - 70)) + "px";
                     score += earn;
                     updateData();
                 }
