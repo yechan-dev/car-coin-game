@@ -101,67 +101,70 @@
             border: none;
         }
         .movBtn{
-            width: 100px;
-            height: 100px;
+            width: 70px;
+            height: 70px;
             background-color: rgba(255, 255, 255, 0.51);
             border: none;
             touch-action: manipulation;
         }
-        #controller{
+        #controller {
             position: fixed;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
+            bottom: 10px;
+            left: 10px;
             display: grid;
-            grid-template-columns: repeat(3, 100px);
-            grid-auto-rows: 100px;
-            gap: 4px;
-            padding: 10px 0;
-            margin-left: 50px;
-            margin-bottom: 50px;
+            grid-template-columns: repeat(3, 70px);
+            grid-auto-rows: 70px;
+            gap: 6px;
+            box-sizing: border-box;
+        }
+        * {
+            touch-action: none;
+        }
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
         }
     </style>
 </head>
 <body>
-    <button id="shopBtn" class="text" onclick="changeScreen()">🛒 쇼핑 메뉴</button><br><br><br>
-    <button id="upgradeBtn" class="text" onclick="levelUp()">⬆️ 0 / 0</button><br><br><br>
-    <!--<button id="addCoinBtn" class="text" onclick="addCoin()">⬆️</button><br><br><br>-->
-    <div id="game_screen">
-        <h1 class="car" id="car"></h1>
-        <h1 class="coin" id="coin">🪙</h1>
-        <div id="coin_container">
-            <h1 id="score" class="text">Loading...</h1>
+    <div id="fullscreen">
+        <button id="shopBtn" class="text" onclick="changeScreen()">🛒 쇼핑 메뉴</button><br><br><br>
+        <button id="upgradeBtn" class="text" onclick="levelUp()">⬆️ 0 / 0</button><br><br><br>
+        <div id="game_screen">
+            <h1 class="car" id="car"></h1>
+            <h1 class="coin" id="coin">🪙</h1>
+            <div id="coin_container">
+                <h1 id="score" class="text">Loading...</h1>
+            </div>
         </div>
-    </div>
-    <div id="shop_screen"><br><br><br>
-        <h1 id="scoreShop" class="text">Loading...</h1>
-        <div class="shopListContainer">
-            <h1 class="text" id="shoppingList">얻는 코인</h1>
-            <h1 class="text" style="color:rgb(54,54,54)" id="earnCount">0개 → 0개</h1>
-            <button class="buyBtn" id="earnCountBuy" onclick="upgradeEarn()">0🪙 구매하기</button>
-        </div><br><br><br><br><br><br>
-        <div class="shopListContainer">
-        <h1 class="text" id="shoppingList">코인 개수</h1>
-        <h1 class="text" style="color:rgb(54,54,54)" id="coinCount">0개 → 0개</h1>
-        <button class="buyBtn" id="coinCountBuy" onclick="upgradeCoin()">0🪙 구매하기</button>
+        <div id="shop_screen"><br><br><br>
+            <h1 id="scoreShop" class="text">Loading...</h1>
+            <div class="shopListContainer">
+                <h1 class="text" id="shoppingList">얻는 코인</h1>
+                <h1 class="text" style="color:rgb(54,54,54)" id="earnCount">0개 → 0개</h1>
+                <button class="buyBtn" id="earnCountBuy" onclick="upgradeEarn()">0🪙 구매하기</button>
+            </div><br><br><br><br><br><br>
+            <div class="shopListContainer">
+            <h1 class="text" id="shoppingList">코인 개수</h1>
+            <h1 class="text" style="color:rgb(54,54,54)" id="coinCount">0개 → 0개</h1>
+            <button class="buyBtn" id="coinCountBuy" onclick="upgradeCoin()">0🪙 구매하기</button>
+            </div>
         </div>
-    </div>
-    <div id="controller">
-        <button class="empBtn"></button>
-        <button class="movBtn" ontouchstart="touchDir='up'" ontouchend="touchDir=null"></button>
-        <button class="empBtn"></button>
-
-        <button class="movBtn" ontouchstart="touchDir='left'" ontouchend="touchDir=null"></button>
-        <button class="movBtn"></button>
-        <button class="movBtn" ontouchstart="touchDir='right'" ontouchend="touchDir=null"></button>
-
-        <button class="empBtn"></button>
-        <button class="movBtn" ontouchstart="touchDir='down'" ontouchend="touchDir=null"></button>
-        <button class="empBtn"></button>
+        <div id="controller">
+            <button class="empBtn"></button>
+            <button class="movBtn" ontouchstart="touchDir='up'" ontouchend="touchDir=null"></button>
+            <button class="empBtn"></button>
+            <button class="movBtn" ontouchstart="touchDir='left'" ontouchend="touchDir=null"></button>
+            <button class="movBtn"></button>
+            <button class="movBtn" ontouchstart="touchDir='right'" ontouchend="touchDir=null"></button>
+            <button class="empBtn"></button>
+            <button class="movBtn" ontouchstart="touchDir='down'" ontouchend="touchDir=null"></button>
+            <button class="empBtn"></button>
+        </div>
     </div>
     <script>
-        let x = 700, y = 700, speed = 3, score = 0, level = 0, newCoinCount = 1;
+        let x = window.innerWidth / 2, y = window.innerHeight / 2, speed = 3, score = 0, level = 0, newCoinCount = 1;
         let move = false, change = false;
         let moveInfo = ["x", speed]
         let char = document.getElementById("car");
@@ -183,6 +186,7 @@
             [1,3,10],
             [1,2,20]
         ]
+        
         let earn = 1;
         let coinCount = 1;
         document.getElementById("shop_screen").style.display = "none";
@@ -279,6 +283,9 @@
         document.addEventListener("keyup", function(e){
             keys[e.key] = false;
         });
+        document.addEventListener("touchmove", function(e){
+            e.preventDefault();
+        }, { passive: false });
         function updateData(){
             char.textContent = cars[level][0];
             speed = cars[level][1];
