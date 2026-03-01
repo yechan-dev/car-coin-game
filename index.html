@@ -109,8 +109,7 @@
             touch-action: manipulation;
         }
         #controller {
-            position: fixed;
-            justify-content: center;
+            
             z-index: 2000;
             bottom: 10px;
             left: 10px;
@@ -209,7 +208,7 @@
             nc.textContent = "🪙";
             nc.className = "coin"
             nc.style.left = Math.round(Math.random() * (window.innerWidth - 70)) + "px";
-            nc.style.top = Math.round(Math.random() * (window.innerWidth - 70)) + "px";
+            nc.style.top = Math.round(Math.random() * (window.innerHeight - 70)) + "px";
             document.getElementById("game_screen").appendChild(nc);
         }
         
@@ -310,7 +309,7 @@
             coins.forEach(c => {
                 if(isColliding(char, c)){
                     c.style.left = Math.round(Math.random() * (window.innerWidth - 70)) + "px";
-                    c.style.top = Math.round(Math.random() * (window.innerWidth - 70)) + "px";
+                    c.style.top = Math.round(Math.random() * (window.innerHeight - 70)) + "px";
                     score += earn;
                     updateData();
                 }
